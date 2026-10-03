@@ -1,0 +1,56 @@
+MIT License
+
+Copyright (c) 2026 MOULEESWARAN_C
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+## Setup Commands (Run These)
+
+```bash
+# 1. Create structure
+mkdir -p privacy-vision-agent/extension/{workers,lib,wasm,models,icons}
+mkdir -p privacy-vision-agent/server
+
+# 2. Save all files above into their paths
+
+# 3. Install extension dependencies
+cd privacy-vision-agent/extension
+npm init -y
+npm install @huggingface/transformers @mediapipe/tasks-vision
+
+# 4. Copy Transformers.js into extension
+mkdir -p lib/transformers
+cp node_modules/@huggingface/transformers/dist/transformers.js lib/transformers/
+cp node_modules/@huggingface/transformers/dist/*.wasm lib/transformers/ 2>/dev/null || true
+
+# 5. Copy MediaPipe WASM
+cp node_modules/@mediapipe/tasks-vision/wasm/* wasm/
+
+# 6. Download BlazeFace model
+curl -L -o models/blaze_face_short_range.tflite \
+  https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite
+
+# 7. Load extension in Chrome
+#    chrome://extensions/ → Developer mode → Load unpacked → select extension/
+
+# 8. Start server
+cd ../../server
+docker-compose up
