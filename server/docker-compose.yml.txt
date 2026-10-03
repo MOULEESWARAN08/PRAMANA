@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  vllm:
+    image: vllm/vllm-openai:latest
+    container_name: privacy-agent-vllm
+    command: >
+      --model Qwen/Qwen2-VL-7B-Instruct
+      --port 8001
+      --limit-mm-per-prompt image=1
+      --max-model-len 8192
+    ports:
+      - "8001:8001"
+    volumes:
+      - ~/.cache/huggingface:/root/.cache/huggingface
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    restart: unless-stopped
+
+  api:
+    build: .
+    container_name: privacy-agent-api
+    ports:
+      - "8000:8000"
+    environment:
+      - VLLM_URL=http://vllm:8001/v1
+      - MODEL_NAME=Qwen/Qwen2-VL-7B-Instruct
+    depends_on:
+      - vllm
+    restart: unless-stopped
